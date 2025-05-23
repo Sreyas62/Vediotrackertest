@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequestWithAuth } from '@/lib/auth';
 import { mergeIntervals, calculateProgress, formatTime } from '@/lib/intervals';
-import { Play, LogOut } from 'lucide-react';
+import { Play, Pause, LogOut } from 'lucide-react';
 
 const YOUTUBE_VIDEO = "https://youtu.be/2YIgGdUtbXM?si=AvWj62Y3p2wtA7-g";
 const VIDEO_ID = "youtube-lecture-2YIgGdUtbXM";
