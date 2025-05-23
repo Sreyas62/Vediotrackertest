@@ -262,12 +262,13 @@ export default function Lecture() {
                 onClick={() => {
                   const player = playerRef.current;
                   if (player) {
-                    const isPlaying = !player.getInternalPlayer()?.paused;
+                    const isPlaying = player.isPlaying();
                     if (isPlaying) {
-                      player.getInternalPlayer()?.pause();
+                      player.seekTo(progress.lastPosition);
+                      player.getInternalPlayer().pauseVideo();
                     } else {
-                      player.seekTo(progress.lastPosition, 'seconds');
-                      player.getInternalPlayer()?.play();
+                      player.seekTo(progress.lastPosition);
+                      player.getInternalPlayer().playVideo();
                     }
                   }
                 }}
