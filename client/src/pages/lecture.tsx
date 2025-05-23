@@ -177,13 +177,24 @@ export default function Lecture() {
           {/* Video Player */}
           <div className="lg:col-span-3">
             <Card className="overflow-hidden">
-              <VideoPlayer
-                videoUrl={SAMPLE_VIDEO}
-                onProgress={handleVideoProgress}
-                onDuration={handleVideoDuration}
-                onSeek={handleVideoSeek}
-                currentTime={progress.lastPosition}
-              />
+              <div className="aspect-video bg-black">
+                <ReactPlayer
+                  url={YOUTUBE_VIDEO}
+                  width="100%"
+                  height="100%"
+                  playing={false}
+                  controls={true}
+                  onProgress={handleVideoProgress}
+                  onDuration={handleVideoDuration}
+                  onSeek={handleVideoSeek}
+                  progressInterval={1000}
+                  config={{
+                    youtube: {
+                      playerVars: { showinfo: 1 }
+                    }
+                  }}
+                />
+              </div>
               
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
