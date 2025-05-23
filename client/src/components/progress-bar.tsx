@@ -83,9 +83,25 @@ export function ProgressBar({
       
       {/* Timeline container */}
       <div className="w-full">
+        {/* Time labels row */}
+        <div className="w-full flex justify-between mb-1">
+          {timeMarkers.map((time, index) => (
+            <div 
+              key={`time-label-${index}`} 
+              className="text-xs text-gray-500"
+              style={{
+                width: '40px',
+                textAlign: index === 0 ? 'left' : index === timeMarkers.length - 1 ? 'right' : 'center'
+              }}
+            >
+              {formatTime(time)}
+            </div>
+          ))}
+        </div>
+        
         {/* Detailed view - taller and more interactive */}
         <div 
-          className={`w-full bg-gray-100 rounded-md ${showDetailedView ? 'h-24' : 'h-12'} relative mb-2 transition-all duration-200 ease-in-out`}
+          className={`w-full bg-gray-100 rounded-md ${showDetailedView ? 'h-20' : 'h-12'} relative transition-all duration-200 ease-in-out`}
           onMouseMove={handleTimelineHover}
           onMouseLeave={handleTimelineLeave}
           onClick={handleTimelineClick}
@@ -101,10 +117,7 @@ export function ProgressBar({
                 transform: 'translateX(-50%)'
               }}
             >
-              <div className="w-px h-full bg-gray-300 opacity-70"></div>
-              <div className="text-xs text-gray-500 absolute -bottom-6">
-                {formatTime(time)}
-              </div>
+              <div className="w-px h-3/4 bg-gray-300 opacity-70"></div>
             </div>
           ))}
           
