@@ -155,6 +155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         videoId: req.body.videoId,
         watchedIntervals: req.body.watchedIntervals || [],
         lastPosition: req.body.lastPosition || 0,
+        lastContinuousPosition: req.body.lastContinuousPosition || req.body.lastPosition || 0,
         totalDuration: req.body.totalDuration || 0,
         progressPercent: 0 // Will be calculated
       };

@@ -91,19 +91,25 @@ export default function Lecture() {
     } else {
       const [start] = currentInterval;
       if (Math.abs(currentTime - currentInterval[1]) <= 2) {
-        // Sequential watching - update both interval and last position
+        // Sequential watching - update continuous position
         setCurrentInterval([start, currentTime + 1]);
         setProgress(prev => ({
           ...prev,
           lastPosition: currentTime,
+          lastContinuousPosition: currentTime,
           watchedIntervals: mergeIntervals([...prev.watchedIntervals, [start, currentTime + 1]])
         }));
-        saveProgress(progress.watchedIntervals, currentTime);
+        saveProgress(progress.watchedIntervals, currentTime, currentTime);
       } else {
-        // User seeked - keep last continuous position, only update interval
+        // User seeked - force return to continuous position
         const newIntervals = mergeIntervals([...progress.watchedIntervals, currentInterval]);
-        saveProgress(newIntervals, progress.lastPosition);
-        setCurrentInterval([currentTime, currentTime + 1]);
+        saveProgress(newIntervals, currentTime, progress.lastContinuousPosition);
+        playerRef.current?.seekTo(progress.lastContinuousPosition, 'seconds');
+        setCurrentInterval([progress.lastContinuousPosition, progress.lastContinuousPosition + 1]);
+        toast({
+          title: "Continuous watching required",
+          description: `Please watch from your last continuous position: ${formatTime(progress.lastContinuousPosition)}`,
+        });
       }
     }
     
@@ -250,14 +256,14 @@ export default function Lecture() {
               <span className="font-medium">{formatTime(progress.lastPosition)}</span>
             </div>
             
-            {progress.lastPosition > 0 && (
+            {progress.lastContinuousPosition > 0 && (
               <Button 
                 onClick={resumeFromLastPosition}
                 className="w-full mt-4"
-                disabled={progress.lastPosition === Math.floor(playerRef.current?.getCurrentTime() || 0)}
+                disabled={progress.lastContinuousPosition === Math.floor(playerRef.current?.getCurrentTime() || 0)}
               >
                 <Play className="h-4 w-4 mr-2" />
-                Continue from {formatTime(progress.lastPosition)}
+                Continue from last watched position ({formatTime(progress.lastContinuousPosition)})
               </Button>
             )}
             

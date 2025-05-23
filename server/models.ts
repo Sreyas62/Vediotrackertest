@@ -41,6 +41,10 @@ const progressSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  lastContinuousPosition: {
+    type: Number,
+    default: 0
+  },
   progressPercent: {
     type: Number,
     default: 0
