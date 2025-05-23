@@ -262,24 +262,19 @@ export default function Lecture() {
                 onClick={() => {
                   const player = playerRef.current;
                   if (player) {
-                    const youtubePlayer = player.getInternalPlayer();
-                    const playerState = youtubePlayer?.getPlayerState();
-                    // PlayerState: -1 (unstarted), 0 (ended), 1 (playing), 2 (paused), 3 (buffering), 5 (video cued)
-                    const isPlaying = playerState === 1;
-                    
-                    if (isPlaying) {
-                      player.seekTo(progress.lastPosition);
-                      youtubePlayer.pauseVideo();
+                    const playing = player.getCurrentTime() > 0 && !player.props.playing;
+                    player.seekTo(progress.lastPosition);
+                    if (!playing) {
+                      player.props.onPlay?.();
                     } else {
-                      player.seekTo(progress.lastPosition);
-                      youtubePlayer.playVideo();
+                      player.props.onPause?.();
                     }
                   }
                 }}
                 className="w-full mt-4"
                 disabled={false}
               >
-                {playerRef.current?.getInternalPlayer()?.getPlayerState() !== 1 ? (
+                {!playerRef.current?.props.playing ? (
                   <>
                     <Play className="h-4 w-4 mr-2" />
                     Continue from {formatTime(progress.lastPosition)}
