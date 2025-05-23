@@ -122,11 +122,13 @@ export default function Lecture() {
   };
 
   const resumeFromLastPosition = () => {
-    // This would be handled by passing the lastPosition to the VideoPlayer
-    toast({
-      title: "Resuming video",
-      description: `Jumping to ${formatTime(progress.lastPosition)}`,
-    });
+    if (playerRef.current && progress.lastPosition > 0) {
+      playerRef.current.seekTo(progress.lastPosition);
+      toast({
+        title: "Resuming video",
+        description: `Jumping to ${formatTime(progress.lastPosition)}`,
+      });
+    }
   };
 
   const handleLogout = () => {
@@ -190,6 +192,7 @@ export default function Lecture() {
             <Card className="overflow-hidden">
               <div className="aspect-video bg-black">
                 <ReactPlayer
+                  ref={playerRef}
                   url={YOUTUBE_VIDEO}
                   width="100%"
                   height="100%"
