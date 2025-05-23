@@ -202,7 +202,7 @@ export function ProgressBar({
             return (
               <div
                 key={idx}
-                className="absolute h-2 bg-secondary"
+                className="absolute h-2 bg-gradient-to-r from-blue-500 to-purple-500"
                 style={{
                   left: `${startPercent}%`,
                   width: `${widthPercent}%`,
