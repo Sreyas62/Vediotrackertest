@@ -100,7 +100,16 @@ For example:
 - Original intervals: `[10, 20], [15, 30], [40, 50]`
 - After merging: `[10, 30], [40, 50]`
 
-### Progress Calculation
+### Progress Calculation and Skip Handling
+
+The system tracks continuous viewing and handles skips intelligently:
+
+1. **Last Position Tracking**: The system maintains the last continuously watched position rather than the last seek position. This ensures users resume from where they actually left off in their sequential viewing.
+
+2. **Skip Detection**: When a user seeks to a different position, the system:
+   - Saves the current viewing interval
+   - Maintains the last continuous position
+   - Encourages users to watch skipped segments by resuming from the last continuous position
 
 The unique progress percentage is calculated with this formula:
 

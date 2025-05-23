@@ -92,10 +92,15 @@ export default function Lecture() {
       const [start] = currentInterval;
       if (Math.abs(currentTime - currentInterval[1]) <= 2) {
         setCurrentInterval([start, currentTime + 1]);
+        // Update last continuous position only during sequential watching
+        setProgress(prev => ({
+          ...prev,
+          lastPosition: currentTime
+        }));
       } else {
-        // User seeked or there's a gap, finalize current interval and start new one
+        // User seeked or there's a gap, finalize current interval but don't update last position
         const newIntervals = mergeIntervals([...progress.watchedIntervals, currentInterval]);
-        saveProgress(newIntervals, currentTime);
+        saveProgress(newIntervals, progress.lastPosition); // Keep the last continuous position
         setCurrentInterval([currentTime, currentTime + 1]);
       }
     }
