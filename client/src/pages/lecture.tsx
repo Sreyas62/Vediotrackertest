@@ -3,11 +3,11 @@ import { useAuth } from '@/contexts/auth-context';
 import ReactPlayer from 'react-player';
 import { ProgressBar } from '@/components/progress-bar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequestWithAuth } from '@/lib/auth';
 import { mergeIntervals, calculateProgress, formatTime } from '@/lib/intervals';
-import { ChevronRight, Play, FileText, Code, BookOpen, LogOut } from 'lucide-react';
+import { Play, LogOut } from 'lucide-react';
 
 const YOUTUBE_VIDEO = "https://youtu.be/2YIgGdUtbXM?si=AvWj62Y3p2wtA7-g";
 const VIDEO_ID = "youtube-lecture-2YIgGdUtbXM";
@@ -186,11 +186,10 @@ export default function Lecture() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="max-w-4xl mx-auto">
           {/* Video Player */}
-          <div className="lg:col-span-3">
-            <Card className="overflow-hidden">
-              <div className="aspect-video bg-black">
+          <Card className="overflow-hidden">
+            <div className="aspect-video bg-black">
                 <ReactPlayer
                   ref={playerRef}
                   url={YOUTUBE_VIDEO}
