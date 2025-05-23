@@ -34,6 +34,7 @@ export default function Lecture() {
   const [videoDuration, setVideoDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const playerRef = useRef<ReactPlayer>(null);
 
   useEffect(() => {
     loadProgress();
@@ -230,6 +231,16 @@ export default function Lecture() {
                   intervals={allIntervals}
                   duration={videoDuration}
                   progressPercent={currentProgress}
+                  onSeekTo={(time) => {
+                    // Find the ReactPlayer instance and seek to the time
+                    if (playerRef.current) {
+                      playerRef.current.seekTo(time);
+                      toast({
+                        title: "Seeking to position",
+                        description: `Jumping to ${formatTime(time)}`,
+                      });
+                    }
+                  }}
                 />
                 
                 <div className="flex items-center justify-between text-sm mt-3">
