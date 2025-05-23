@@ -78,12 +78,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Generate JWT token
-      const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
+      const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '24h' });
       
       res.status(201).json({
         message: "User created successfully",
         token,
-        user: { id: user.id, email: user.email }
+        user: { id: user._id, email: user.email }
       });
     } catch (error) {
       console.error("Registration error:", error);
@@ -108,12 +108,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Generate JWT token
-      const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
+      const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '24h' });
       
       res.json({
         message: "Login successful",
         token,
-        user: { id: user.id, email: user.email }
+        user: { id: user._id, email: user.email }
       });
     } catch (error) {
       console.error("Login error:", error);
