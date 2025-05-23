@@ -33,6 +33,7 @@ export default function Lecture() {
   const [currentInterval, setCurrentInterval] = useState<[number, number] | null>(null);
   const [videoDuration, setVideoDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const playerRef = useRef<ReactPlayer>(null);
 
@@ -202,7 +203,7 @@ export default function Lecture() {
               url={YOUTUBE_VIDEO}
               width="100%"
               height="100%"
-              playing={false}
+              playing={playing}
               controls={true}
               onProgress={handleVideoProgress}
               onDuration={handleVideoDuration}
@@ -262,19 +263,14 @@ export default function Lecture() {
                 onClick={() => {
                   const player = playerRef.current;
                   if (player) {
-                    const playing = player.getCurrentTime() > 0 && !player.props.playing;
                     player.seekTo(progress.lastPosition);
-                    if (!playing) {
-                      player.props.onPlay?.();
-                    } else {
-                      player.props.onPause?.();
-                    }
+                    setPlaying(!playing);
                   }
                 }}
                 className="w-full mt-4"
                 disabled={false}
               >
-                {!playerRef.current?.props.playing ? (
+                {!playing ? (
                   <>
                     <Play className="h-4 w-4 mr-2" />
                     Continue from {formatTime(progress.lastPosition)}
