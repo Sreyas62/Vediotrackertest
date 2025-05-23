@@ -91,16 +91,18 @@ export default function Lecture() {
     } else {
       const [start] = currentInterval;
       if (Math.abs(currentTime - currentInterval[1]) <= 2) {
+        // Sequential watching - update both interval and last position
         setCurrentInterval([start, currentTime + 1]);
-        // Update last continuous position only during sequential watching
         setProgress(prev => ({
           ...prev,
-          lastPosition: currentTime
+          lastPosition: currentTime,
+          watchedIntervals: mergeIntervals([...prev.watchedIntervals, [start, currentTime + 1]])
         }));
+        saveProgress(progress.watchedIntervals, currentTime);
       } else {
-        // User seeked or there's a gap, finalize current interval but don't update last position
+        // User seeked - keep last continuous position, only update interval
         const newIntervals = mergeIntervals([...progress.watchedIntervals, currentInterval]);
-        saveProgress(newIntervals, progress.lastPosition); // Keep the last continuous position
+        saveProgress(newIntervals, progress.lastPosition);
         setCurrentInterval([currentTime, currentTime + 1]);
       }
     }
@@ -248,13 +250,14 @@ export default function Lecture() {
               <span className="font-medium">{formatTime(progress.lastPosition)}</span>
             </div>
             
-            {progress.lastPosition > 0 && progress.lastPosition !== Math.floor(playerRef.current?.getCurrentTime() || 0) && (
+            {progress.lastPosition > 0 && (
               <Button 
                 onClick={resumeFromLastPosition}
                 className="w-full mt-4"
+                disabled={progress.lastPosition === Math.floor(playerRef.current?.getCurrentTime() || 0)}
               >
                 <Play className="h-4 w-4 mr-2" />
-                Resume from last watched position ({formatTime(progress.lastPosition)})
+                Continue from {formatTime(progress.lastPosition)}
               </Button>
             )}
             
