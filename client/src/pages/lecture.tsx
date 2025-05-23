@@ -262,20 +262,24 @@ export default function Lecture() {
                 onClick={() => {
                   const player = playerRef.current;
                   if (player) {
-                    const isPlaying = player.isPlaying();
+                    const youtubePlayer = player.getInternalPlayer();
+                    const playerState = youtubePlayer?.getPlayerState();
+                    // PlayerState: -1 (unstarted), 0 (ended), 1 (playing), 2 (paused), 3 (buffering), 5 (video cued)
+                    const isPlaying = playerState === 1;
+                    
                     if (isPlaying) {
                       player.seekTo(progress.lastPosition);
-                      player.getInternalPlayer().pauseVideo();
+                      youtubePlayer.pauseVideo();
                     } else {
                       player.seekTo(progress.lastPosition);
-                      player.getInternalPlayer().playVideo();
+                      youtubePlayer.playVideo();
                     }
                   }
                 }}
                 className="w-full mt-4"
                 disabled={false}
               >
-                {playerRef.current?.getInternalPlayer()?.paused ? (
+                {playerRef.current?.getInternalPlayer()?.getPlayerState() !== 1 ? (
                   <>
                     <Play className="h-4 w-4 mr-2" />
                     Continue from {formatTime(progress.lastPosition)}
