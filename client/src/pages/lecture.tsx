@@ -172,17 +172,17 @@ export default function Lecture() {
         {/* Lecture Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-2 text-sm text-gray-500 mb-4">
-            <span>Computer Science</span>
+            <span>Web Development</span>
             <ChevronRight className="h-4 w-4" />
-            <span>Introduction to Algorithms</span>
+            <span>Node.js Tutorials</span>
             <ChevronRight className="h-4 w-4" />
-            <span className="text-gray-900 font-medium">Lecture 3: Sorting Algorithms</span>
+            <span className="text-gray-900 font-medium">Getting Started with Node.js</span>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Understanding Merge Sort and Quick Sort
+            Node.js Fundamentals
           </h1>
           <p className="text-gray-600">
-            Learn the fundamentals of divide-and-conquer sorting algorithms and their time complexity analysis.
+            Learn the core concepts of Node.js, how to set up your environment, and create your first application.
           </p>
         </div>
 
@@ -283,7 +283,7 @@ export default function Lecture() {
                     <span className="text-white text-xs">✓</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">Introduction to Sorting</p>
+                    <p className="text-sm font-medium text-gray-900 truncate">Introduction to Node.js</p>
                     <p className="text-xs text-gray-500">15:30 • Completed</p>
                   </div>
                 </div>
@@ -293,7 +293,7 @@ export default function Lecture() {
                     <span className="text-white text-xs">✓</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">Bubble Sort Analysis</p>
+                    <p className="text-sm font-medium text-gray-900 truncate">Setting Up Your Environment</p>
                     <p className="text-xs text-gray-500">22:15 • Completed</p>
                   </div>
                 </div>
@@ -303,7 +303,7 @@ export default function Lecture() {
                     <Play className="h-3 w-3 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-primary truncate">Merge Sort & Quick Sort</p>
+                    <p className="text-sm font-medium text-primary truncate">Building Your First App</p>
                     <p className="text-xs text-blue-600">45:32 • {currentProgress.toFixed(1)}% completed</p>
                   </div>
                 </div>
@@ -313,7 +313,7 @@ export default function Lecture() {
                     <span className="text-white text-xs">🔒</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-500 truncate">Heap Sort Implementation</p>
+                    <p className="text-sm font-medium text-gray-500 truncate">Advanced Node.js Concepts</p>
                     <p className="text-xs text-gray-400">38:45 • Locked</p>
                   </div>
                 </div>
