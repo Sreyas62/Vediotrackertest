@@ -168,225 +168,97 @@ export default function Lecture() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Lecture Header */}
         <div className="mb-8">
-          <div className="flex items-center space-x-2 text-sm text-gray-500 mb-4">
-            <span>Web Development</span>
-            <ChevronRight className="h-4 w-4" />
-            <span>Node.js Tutorials</span>
-            <ChevronRight className="h-4 w-4" />
-            <span className="text-gray-900 font-medium">Getting Started with Node.js</span>
-          </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Node.js Fundamentals
           </h1>
           <p className="text-gray-600">
-            Learn the core concepts of Node.js, how to set up your environment, and create your first application.
+            Track your progress as you learn Node.js concepts
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          {/* Video Player */}
-          <Card className="overflow-hidden">
-            <div className="aspect-video bg-black">
-                <ReactPlayer
-                  ref={playerRef}
-                  url={YOUTUBE_VIDEO}
-                  width="100%"
-                  height="100%"
-                  playing={false}
-                  controls={true}
-                  onProgress={handleVideoProgress}
-                  onDuration={handleVideoDuration}
-                  onSeek={handleVideoSeek}
-                  progressInterval={1000}
-                  onPlay={() => console.log('Video started playing')}
-                  onPause={() => console.log('Video paused')}
-                  config={{
-                    youtube: {
-                      playerVars: { 
-                        showinfo: 1,
-                        rel: 0,
-                        modestbranding: 1
-                      }
-                    }
-                  }}
-                />
+        {/* Video Player */}
+        <Card className="overflow-hidden mb-6">
+          <div className="aspect-video bg-black">
+            <ReactPlayer
+              ref={playerRef}
+              url={YOUTUBE_VIDEO}
+              width="100%"
+              height="100%"
+              playing={false}
+              controls={true}
+              onProgress={handleVideoProgress}
+              onDuration={handleVideoDuration}
+              onSeek={handleVideoSeek}
+              progressInterval={1000}
+              onPlay={() => console.log('Video started playing')}
+              onPause={() => console.log('Video paused')}
+              config={{
+                youtube: {
+                  playerVars: { 
+                    showinfo: 1,
+                    rel: 0,
+                    modestbranding: 1
+                  }
+                }
+              }}
+            />
+          </div>
+          
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Video Progress</h3>
+                <p className="text-sm text-gray-600">Track your learning progress</p>
               </div>
-              
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Video Progress</h3>
-                    <p className="text-sm text-gray-600">Track your learning progress</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-secondary">
-                      {currentProgress.toFixed(1)}%
-                    </div>
-                    <div className="text-xs text-gray-500">Completed</div>
-                  </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-secondary">
+                  {currentProgress.toFixed(1)}%
                 </div>
-                
-                <ProgressBar
-                  intervals={allIntervals}
-                  duration={videoDuration}
-                  progressPercent={currentProgress}
-                  onSeekTo={(time) => {
-                    // Find the ReactPlayer instance and seek to the time
-                    if (playerRef.current) {
-                      playerRef.current.seekTo(time);
-                      toast({
-                        title: "Seeking to position",
-                        description: `Jumping to ${formatTime(time)}`,
-                      });
-                    }
-                  }}
-                />
-                
-                <div className="flex items-center justify-between text-sm mt-3">
-                  <span className="text-gray-600">Last position</span>
-                  <span className="font-medium">{formatTime(progress.lastPosition)}</span>
-                </div>
-                
-                {progress.lastPosition > 0 && (
-                  <Button 
-                    onClick={resumeFromLastPosition}
-                    className="w-full mt-4"
-                  >
-                    <Play className="h-4 w-4 mr-2" />
-                    Resume from {formatTime(progress.lastPosition)}
-                  </Button>
-                )}
-                
-                {isLoading && (
-                  <div className="mt-2 text-xs text-gray-500 text-center">
-                    Saving progress...
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Course Outline */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Course Outline</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex items-center space-x-3 p-2 rounded-lg bg-green-50 border border-green-200">
-                  <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-white text-xs">✓</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">Introduction to Node.js</p>
-                    <p className="text-xs text-gray-500">15:30 • Completed</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3 p-2 rounded-lg bg-green-50 border border-green-200">
-                  <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-white text-xs">✓</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">Setting Up Your Environment</p>
-                    <p className="text-xs text-gray-500">22:15 • Completed</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3 p-2 rounded-lg bg-blue-50 border border-blue-200">
-                  <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                    <Play className="h-3 w-3 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-primary truncate">Building Your First App</p>
-                    <p className="text-xs text-blue-600">45:32 • {currentProgress.toFixed(1)}% completed</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors opacity-60">
-                  <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-white text-xs">🔒</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-500 truncate">Advanced Node.js Concepts</p>
-                    <p className="text-xs text-gray-400">38:45 • Locked</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Resources */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Resources</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-blue-50 transition-all group cursor-pointer">
-                  <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center group-hover:bg-red-500 transition-colors">
-                    <FileText className="h-4 w-4 text-red-500 group-hover:text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">Lecture Slides</p>
-                    <p className="text-xs text-gray-500">PDF • 2.3 MB</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-blue-50 transition-all group cursor-pointer">
-                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors">
-                    <Code className="h-4 w-4 text-green-500 group-hover:text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">Code Examples</p>
-                    <p className="text-xs text-gray-500">Python • GitHub</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-blue-50 transition-all group cursor-pointer">
-                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-500 transition-colors">
-                    <BookOpen className="h-4 w-4 text-purple-500 group-hover:text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">Practice Problems</p>
-                    <p className="text-xs text-gray-500">5 exercises</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Course Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Your Progress</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Course Completion</span>
-                    <span className="text-sm font-bold text-secondary">45%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-secondary h-2 rounded-full" style={{ width: "45%" }}></div>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div className="text-center">
-                    <div className="text-xl font-bold text-gray-900">2h 15m</div>
-                    <div className="text-xs text-gray-500">Watch Time</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xl font-bold text-gray-900">2 / 8</div>
-                    <div className="text-xs text-gray-500">Lectures</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+                <div className="text-xs text-gray-500">Completed</div>
+              </div>
+            </div>
+            
+            <ProgressBar
+              intervals={allIntervals}
+              duration={videoDuration}
+              progressPercent={currentProgress}
+              onSeekTo={(time) => {
+                // Find the ReactPlayer instance and seek to the time
+                if (playerRef.current) {
+                  playerRef.current.seekTo(time);
+                  toast({
+                    title: "Seeking to position",
+                    description: `Jumping to ${formatTime(time)}`,
+                  });
+                }
+              }}
+            />
+            
+            <div className="flex items-center justify-between text-sm mt-3">
+              <span className="text-gray-600">Last position</span>
+              <span className="font-medium">{formatTime(progress.lastPosition)}</span>
+            </div>
+            
+            {progress.lastPosition > 0 && (
+              <Button 
+                onClick={resumeFromLastPosition}
+                className="w-full mt-4"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Resume from {formatTime(progress.lastPosition)}
+              </Button>
+            )}
+            
+            {isLoading && (
+              <div className="mt-2 text-xs text-gray-500 text-center">
+                Saving progress...
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
