@@ -90,25 +90,26 @@ export default function Lecture() {
       setCurrentInterval([currentTime, currentTime + 1]);
     } else {
       const [start] = currentInterval;
-      if (Math.abs(currentTime - currentInterval[1]) <= 2) {
-        // Sequential watching - update continuous position
+      // Check if seeking backwards or within 2 seconds forward
+      if (currentTime <= progress.lastContinuousPosition || Math.abs(currentTime - currentInterval[1]) <= 2) {
+        // Allow backward seeking or sequential watching
         setCurrentInterval([start, currentTime + 1]);
         setProgress(prev => ({
           ...prev,
           lastPosition: currentTime,
-          lastContinuousPosition: currentTime,
+          lastContinuousPosition: Math.max(currentTime, prev.lastContinuousPosition),
           watchedIntervals: mergeIntervals([...prev.watchedIntervals, [start, currentTime + 1]])
         }));
-        saveProgress(progress.watchedIntervals, currentTime, currentTime);
+        saveProgress(progress.watchedIntervals, currentTime, progress.lastContinuousPosition);
       } else {
-        // User seeked - force return to continuous position
+        // Prevent forward skipping
         const newIntervals = mergeIntervals([...progress.watchedIntervals, currentInterval]);
-        saveProgress(newIntervals, currentTime, progress.lastContinuousPosition);
+        saveProgress(newIntervals, progress.lastContinuousPosition, progress.lastContinuousPosition);
         playerRef.current?.seekTo(progress.lastContinuousPosition, 'seconds');
         setCurrentInterval([progress.lastContinuousPosition, progress.lastContinuousPosition + 1]);
         toast({
-          title: "Continuous watching required",
-          description: `Please watch from your last continuous position: ${formatTime(progress.lastContinuousPosition)}`,
+          title: "Cannot skip forward",
+          description: `Please watch the content sequentially from ${formatTime(progress.lastContinuousPosition)}`,
         });
       }
     }
@@ -258,12 +259,32 @@ export default function Lecture() {
             
             {progress.lastContinuousPosition > 0 && (
               <Button 
-                onClick={resumeFromLastPosition}
+                onClick={() => {
+                  const player = playerRef.current;
+                  if (player) {
+                    const isPlaying = !player.getInternalPlayer()?.paused;
+                    if (isPlaying) {
+                      player.getInternalPlayer()?.pause();
+                    } else {
+                      player.seekTo(progress.lastPosition, 'seconds');
+                      player.getInternalPlayer()?.play();
+                    }
+                  }
+                }}
                 className="w-full mt-4"
-                disabled={progress.lastContinuousPosition === Math.floor(playerRef.current?.getCurrentTime() || 0)}
+                disabled={false}
               >
-                <Play className="h-4 w-4 mr-2" />
-                Continue from last watched position ({formatTime(progress.lastContinuousPosition)})
+                {playerRef.current?.getInternalPlayer()?.paused ? (
+                  <>
+                    <Play className="h-4 w-4 mr-2" />
+                    Continue from {formatTime(progress.lastPosition)}
+                  </>
+                ) : (
+                  <>
+                    <Pause className="h-4 w-4 mr-2" />
+                    Pause
+                  </>
+                )}
               </Button>
             )}
             
