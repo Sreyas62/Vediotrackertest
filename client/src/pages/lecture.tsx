@@ -128,10 +128,11 @@ export default function Lecture() {
 
   const resumeFromLastPosition = () => {
     if (playerRef.current && progress.lastPosition > 0) {
-      playerRef.current.seekTo(progress.lastPosition);
+      playerRef.current.seekTo(progress.lastPosition, 'seconds');
+      playerRef.current.getInternalPlayer()?.playVideo();
       toast({
         title: "Resuming video",
-        description: `Jumping to ${formatTime(progress.lastPosition)}`,
+        description: `Resuming from ${formatTime(progress.lastPosition)}`,
       });
     }
   };
@@ -247,13 +248,13 @@ export default function Lecture() {
               <span className="font-medium">{formatTime(progress.lastPosition)}</span>
             </div>
             
-            {progress.lastPosition > 0 && (
+            {progress.lastPosition > 0 && progress.lastPosition !== Math.floor(playerRef.current?.getCurrentTime() || 0) && (
               <Button 
                 onClick={resumeFromLastPosition}
                 className="w-full mt-4"
               >
                 <Play className="h-4 w-4 mr-2" />
-                Resume from {formatTime(progress.lastPosition)}
+                Resume from last watched position ({formatTime(progress.lastPosition)})
               </Button>
             )}
             
