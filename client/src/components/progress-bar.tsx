@@ -48,7 +48,17 @@ export function ProgressBar({
     const rect = e.currentTarget.getBoundingClientRect();
     const position = (e.clientX - rect.left) / rect.width;
     const timePosition = Math.floor(position * duration);
-    onSeekTo(timePosition);
+    
+    // Find the closest watched segment
+    const nearestSegment = intervals.reduce((nearest, interval) => {
+      const [start, end] = interval;
+      if (Math.abs(timePosition - start) < Math.abs(timePosition - nearest[0])) {
+        return interval;
+      }
+      return nearest;
+    }, [0, 0]);
+    
+    onSeekTo(nearestSegment[0]);
   };
   
   const handleSegmentClick = (startTime: number) => {
@@ -186,8 +196,23 @@ export function ProgressBar({
         
         {/* Simple progress bar (always shown) */}
         <div className="w-full bg-gray-200 rounded-full h-2 relative">
+          {intervals.map((interval, idx) => {
+            const startPercent = (interval[0] / duration) * 100;
+            const widthPercent = ((interval[1] - interval[0]) / duration) * 100;
+            return (
+              <div
+                key={idx}
+                className="absolute h-2 bg-secondary"
+                style={{
+                  left: `${startPercent}%`,
+                  width: `${widthPercent}%`,
+                  borderRadius: idx === 0 ? '4px 0 0 4px' : idx === intervals.length - 1 ? '0 4px 4px 0' : '0'
+                }}
+              />
+            );
+          })}
           <div 
-            className="absolute h-2 bg-secondary rounded-full" 
+            className="absolute h-2 bg-secondary opacity-30 rounded-full" 
             style={{ width: `${progressPercent}%` }}
           ></div>
         </div>
