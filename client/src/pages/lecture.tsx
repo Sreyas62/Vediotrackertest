@@ -83,6 +83,8 @@ export default function Lecture() {
   const handleVideoProgress = (progressData: { played: number; playedSeconds: number; loaded: number; loadedSeconds: number }) => {
     const currentTime = Math.floor(progressData.playedSeconds);
     
+    console.log('Video progress:', currentTime, 'seconds');
+    
     if (!currentInterval) {
       setCurrentInterval([currentTime, currentTime + 1]);
     } else {
@@ -95,6 +97,14 @@ export default function Lecture() {
         saveProgress(newIntervals, currentTime);
         setCurrentInterval([currentTime, currentTime + 1]);
       }
+    }
+    
+    // Save progress every 10 seconds
+    if (currentTime > 0 && currentTime % 10 === 0) {
+      const currentIntervals = currentInterval 
+        ? mergeIntervals([...progress.watchedIntervals, currentInterval])
+        : progress.watchedIntervals;
+      saveProgress(currentIntervals, currentTime);
     }
   };
 
@@ -188,9 +198,15 @@ export default function Lecture() {
                   onDuration={handleVideoDuration}
                   onSeek={handleVideoSeek}
                   progressInterval={1000}
+                  onPlay={() => console.log('Video started playing')}
+                  onPause={() => console.log('Video paused')}
                   config={{
                     youtube: {
-                      playerVars: { showinfo: 1 }
+                      playerVars: { 
+                        showinfo: 1,
+                        rel: 0,
+                        modestbranding: 1
+                      }
                     }
                   }}
                 />
