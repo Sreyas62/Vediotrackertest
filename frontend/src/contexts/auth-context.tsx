@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiRequest } from '@/lib/queryClient';
+import { API_BASE_URL } from '@/lib/api';
 
 interface User {
   id: number;
@@ -32,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await apiRequest('POST', '/api/auth/login', { email, password });
+    const response = await apiRequest('POST', `${API_BASE_URL}/api/auth/login`, { email, password });
     const data = await response.json();
     
     setToken(data.token);
@@ -42,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (email: string, password: string) => {
-    const response = await apiRequest('POST', '/api/auth/register', { email, password });
+    const response = await apiRequest('POST', `${API_BASE_URL}/api/auth/register`, { email, password });
     const data = await response.json();
     
     setToken(data.token);
