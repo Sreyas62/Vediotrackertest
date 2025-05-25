@@ -1,14 +1,19 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, loginSchema, insertProgressSchema } from "@shared/schema";
+import { insertUserSchema, loginSchema, insertProgressSchema } from "@db/schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
+// Define a custom request type that includes userId
+interface AuthenticatedRequest extends Request {
+  userId?: string;
+}
+
 // Middleware to verify JWT token
-const authenticateToken = async (req: any, res: any, next: any) => {
+const authenticateToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -25,36 +30,7 @@ const authenticateToken = async (req: any, res: any, next: any) => {
   }
 };
 
-// Utility function to merge overlapping intervals
-function mergeIntervals(intervals: Array<[number, number]>): Array<[number, number]> {
-  if (intervals.length === 0) return [];
-  
-  const sorted = intervals.sort((a, b) => a[0] - b[0]);
-  const merged: Array<[number, number]> = [sorted[0]];
-  
-  for (let i = 1; i < sorted.length; i++) {
-    const current = sorted[i];
-    const lastMerged = merged[merged.length - 1];
-    
-    if (current[0] <= lastMerged[1]) {
-      lastMerged[1] = Math.max(lastMerged[1], current[1]);
-    } else {
-      merged.push(current);
-    }
-  }
-  
-  return merged;
-}
 
-// Calculate progress percentage based on watched intervals and total duration
-function calculateProgress(intervals: Array<[number, number]>, totalDuration: number): number {
-  if (totalDuration === 0) return 0;
-  
-  const mergedIntervals = mergeIntervals(intervals);
-  const watchedTime = mergedIntervals.reduce((total, [start, end]) => total + (end - start), 0);
-  
-  return Math.min(Math.round((watchedTime / totalDuration) * 100), 100);
-}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -122,22 +98,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Progress routes
-  app.get("/api/progress", authenticateToken, async (req, res) => {
+  app.get("/api/progress/:videoId", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const { videoId } = req.query;
-      
-      if (!videoId || typeof videoId !== 'string') {
-        return res.status(400).json({ message: "Video ID is required" });
+      const { videoId } = req.params;
+      if (!req.userId) {
+        return res.status(401).json({ message: 'Authentication error: User ID missing.' });
       }
       
       const progress = await storage.getProgress(req.userId, videoId);
       
       if (!progress) {
+        // Return default structure if no progress found for this video
         return res.json({
-          watchedIntervals: [],
-          lastPosition: 0,
-          progressPercent: 0,
-          totalDuration: 0
+          userId: req.userId,
+          videoId,
+          mergedIntervals: [],
+          totalUniqueWatchedSeconds: 0,
+          lastKnownPosition: 0,
+          progressPercentage: 0,
+          videoDuration: 0, // Client might send this on first save
         });
       }
       
@@ -148,35 +127,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/progress", authenticateToken, async (req, res) => {
+  app.post("/api/progress/:videoId", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const progressData = {
-        userId: req.userId,
-        videoId: req.body.videoId,
-        watchedIntervals: req.body.watchedIntervals || [],
-        lastPosition: req.body.lastPosition || 0,
-        lastContinuousPosition: req.body.lastContinuousPosition || req.body.lastPosition || 0,
-        totalDuration: req.body.totalDuration || 0,
-        progressPercent: 0 // Will be calculated
-      };
-      
-      // Merge new intervals with existing ones
-      const existingProgress = await storage.getProgress(req.userId, progressData.videoId);
-      if (existingProgress) {
-        const allIntervals = [...existingProgress.watchedIntervals, ...progressData.watchedIntervals];
-        progressData.watchedIntervals = mergeIntervals(allIntervals);
-      } else {
-        progressData.watchedIntervals = mergeIntervals(progressData.watchedIntervals);
+      const { videoId } = req.params;
+      if (!req.userId) {
+        return res.status(401).json({ message: 'Authentication error: User ID missing.' });
       }
-      
-      // Calculate progress percentage
-      progressData.progressPercent = calculateProgress(progressData.watchedIntervals, progressData.totalDuration);
-      
-      const savedProgress = await storage.saveProgress(progressData);
-      
+      // TODO: Update insertProgressSchema in @shared/schema to validate this new body
+      // const validatedData = insertProgressSchema.parse(req.body);
+
+      const progressPayload = {
+        userId: req.userId,
+        videoId,
+        mergedIntervals: req.body.mergedIntervals, // Client sends pre-merged intervals
+        totalUniqueWatchedSeconds: req.body.totalUniqueWatchedSeconds,
+        lastKnownPosition: req.body.lastKnownPosition,
+        progressPercentage: req.body.progressPercentage,
+        videoDuration: req.body.videoDuration
+      };
+
+      // Validate payload structure (basic check, rely on schema for thorough validation)
+      if (!progressPayload.mergedIntervals || 
+          typeof progressPayload.totalUniqueWatchedSeconds !== 'number' ||
+          typeof progressPayload.lastKnownPosition !== 'number' ||
+          typeof progressPayload.progressPercentage !== 'number' ||
+          typeof progressPayload.videoDuration !== 'number') {
+        return res.status(400).json({ message: "Invalid progress data payload" });
+      }
+
+      const savedProgress = await storage.saveProgress(progressPayload);
       res.json(savedProgress);
     } catch (error) {
       console.error("Save progress error:", error);
+      // if (error instanceof ZodError) { // If using Zod for validation
+      //   return res.status(400).json({ message: "Invalid input data", errors: error.errors });
+      // }
       res.status(500).json({ message: "Failed to save progress" });
     }
   });

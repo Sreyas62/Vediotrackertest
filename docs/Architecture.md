@@ -26,7 +26,7 @@ This document outlines the architecture of a video progress tracker system. It e
 ## Database Connection
 
 ```
-mongodb+srv://admin:aadmin@progresstracker.aogwpwa.mongodb.net/?retryWrites=true&w=majority&appName=ProgressTracker
+mongodb+srv://admin:admin@progresstracker.aogwpwa.mongodb.net/?retryWrites=true&w=majority&appName=ProgressTracker
 ```
 
 ---

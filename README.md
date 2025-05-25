@@ -1,40 +1,77 @@
-# Video Progress Tracking System
+# VedioTracker: Advanced Video Progress Tracking System
 
-A sophisticated video progress tracking system designed for educational content. Accurately tracks and visualizes video viewing progress with precise interval tracking and continuous position monitoring.
+A sophisticated system for tracking and visualizing viewing progress in educational videos. It accurately records watched segments, handles native player seeks, and ensures data persistence for a seamless user experience.
 
 ## Features
 
-- **Precise Progress Tracking**: Records exact segments watched with interval-based tracking
-- **Smart Progress Calculation**: Only counts unique viewing time, preventing inflation from rewatching
-- **Interactive Timeline**: Visual representation of watched segments with seek functionality
-- **Continuous Position Tracking**: Maintains viewing integrity by tracking last continuous position
-- **Real-time Progress Updates**: Automatic progress saving with optimistic updates
-- **Secure Authentication**: JWT-based user authentication system
-- **Persistent Progress**: MongoDB-backed progress storage with efficient querying
+- **Accurate Segment Tracking**: Precisely records watched video intervals.
+- **Unique View Time Calculation**: Progress is based on uniquely watched portions, ignoring rewatches.
+- **Robust Seek Handling**: Correctly tracks progress even when users jump to different parts of the video using the native player controls.
+- **Debounced Real-time Saving**: Efficiently saves progress to the backend with debouncing to minimize network requests, using `useRef` to ensure the latest data is saved.
+- **Persistent Storage**: Leverages MongoDB to store user progress, allowing resumption across sessions.
+- **Interactive Progress Bar**: Visually displays watched segments and live viewing progress.
+- **JWT Authentication**: Secures user data and progress.
+- **Responsive UI**: Built with React, Vite, TailwindCSS, and Shadcn/UI for a modern user experience.
 
 ## Setup and Installation
 
-1. **Clone and Install**
-   ```bash
-   git clone <repository-url>
-   cd video-progress-tracker
-   npm install
-   ```
+This project is a monorepo with a `frontend` and a `backend` directory.
 
-2. **Environment Setup**
-   Create `.env` file:
-   ```
-   MONGODB_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
-   ```
+1.  **Clone the Repository**
+    ```bash
+    git clone <repository-url> # Replace <repository-url> with the actual URL
+    cd Vediotrackertest
+    ```
 
-3. **Start Development Server**
-   ```bash
-   npm run dev
-   ```
+2.  **Backend Setup**
+    Navigate to the backend directory:
+    ```bash
+    cd backend
+    ```
+    Install dependencies:
+    ```bash
+    npm install
+    ```
+    Create a `.env` file in the `backend` directory (`backend/.env`) with the following content, replacing placeholder values:
+    ```env
+    MONGODB_URI=your_mongodb_connection_string_here
+    JWT_SECRET=your_strong_jwt_secret_here
+    PORT=5000 # Or any port you prefer for the backend
+    ```
 
-4. **Access Application**
-   Open http://localhost:5000 in your browser
+3.  **Frontend Setup**
+    Navigate to the frontend directory (from the project root):
+    ```bash
+    cd frontend
+    ```
+    Or, if you are in the `backend` directory:
+    ```bash
+    cd ../frontend
+    ```
+    Install dependencies:
+    ```bash
+    npm install
+    ```
+    Create a `.env` file in the `frontend` directory (`frontend/.env`) with the following content:
+    ```env
+    VITE_API_BASE_URL=http://localhost:5000/api # Adjust port if your backend runs on a different port
+    ```
+
+## Running the Application
+
+1.  **Start the Backend Server**
+    In a terminal, navigate to the `backend` directory and run:
+    ```bash
+    npm run dev
+    ```
+    The backend server should typically start on `http://localhost:5000` (or the `PORT` configured in `backend/.env`).
+
+2.  **Start the Frontend Development Server**
+    In another terminal, navigate to the `frontend` directory and run:
+    ```bash
+    npm run dev
+    ```
+    The frontend application will usually be available at `http://localhost:5173` (Vite's default). Open this URL in your browser.
 
 ## Design Decisions
 

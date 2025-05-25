@@ -28,30 +28,37 @@ const progressSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  watchedIntervals: [{
-    type: [Number],
-    validate: {
-      validator: function(arr: number[]) {
-        return arr.length === 2;
-      },
-      message: 'Each interval must have exactly 2 numbers [start, end]'
-    }
+  // Stores unique, merged watched intervals
+  mergedIntervals: [{
+    start: { type: Number, required: true },
+    end: { type: Number, required: true },
+    _id: false // Don't create an _id for subdocuments in this array
   }],
-  lastPosition: {
+  // Total seconds of unique video content watched
+  totalUniqueWatchedSeconds: {
     type: Number,
-    default: 0
+    default: 0,
+    required: true
   },
-  lastContinuousPosition: {
+  // Last known position of the video player
+  lastKnownPosition: {
     type: Number,
-    default: 0
+    default: 0,
+    required: true
   },
-  progressPercent: {
+  // Overall progress percentage
+  progressPercentage: {
     type: Number,
-    default: 0
+    default: 0,
+    required: true,
+    min: 0,
+    max: 100
   },
-  totalDuration: {
+  // Total duration of the video
+  videoDuration: {
     type: Number,
-    default: 0
+    required: true,
+    min: 0
   }
 }, {
   timestamps: true
