@@ -6,22 +6,39 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import { Request, Response, NextFunction } from 'express';
 import { registerRoutes } from "./routes";
-
 import { connectDB } from "./db";
 
 const app = express();
+
+// CORS configuration
+const allowedOrigins = [
+  'https://vediotrackertest.vercel.app', // Your Vercel frontend
+  'http://localhost:3000', // Common local dev port for React apps
+  'http://localhost:5173', // Common local dev port for Vite React apps
+  // Add any other origins you need to support
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg =
+        'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true, // Important for sending cookies or authorization headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Specify allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://your-frontend-deployed-url.com'], // Replace with your actual deployed frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-})); // Enable CORS for specific origins and options
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
