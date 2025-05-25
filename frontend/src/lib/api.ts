@@ -50,10 +50,10 @@ export async function saveVideoProgress(
   progressData: Omit<VideoProgressData, 'userId' | 'videoId' | 'createdAt' | 'updatedAt'>, // userId is added by backend, videoId from path
   token: string
 ): Promise<VideoProgressData> {
-  console.log('[api.ts] Attempting to save progress for videoId:', videoId);
-  console.log('[api.ts] Progress data:', JSON.stringify(progressData, null, 2));
-  console.log('[api.ts] Auth token:', token);
-  console.log('[api.ts] API endpoint:', `${API_BASE_URL}/progress/${videoId}`);
+  // console.log('[api.ts] Attempting to save progress for videoId:', videoId);
+  // console.log('[api.ts] Progress data:', JSON.stringify(progressData, null, 2));
+  // console.log('[api.ts] Auth token:', token);
+  // console.log('[api.ts] API endpoint:', `${API_BASE_URL}/progress/${videoId}`);
 
   if (!token || token === 'your-jwt-token') {
     console.error('[api.ts] Invalid or placeholder token. Aborting save.');
@@ -70,19 +70,19 @@ export async function saveVideoProgress(
     body: JSON.stringify(progressData)
   });
 
-  console.log('[api.ts] Save progress response status:', response.status);
+  // console.log('[api.ts] Save progress response status:', response.status);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ message: 'Failed to save progress and parse error response body' }));
-    console.error('[api.ts] Failed to save progress. Status:', response.status, 'Error:', errorData);
+    // console.error('[api.ts] Failed to save progress. Status:', response.status, 'Error:', errorData);
     throw new Error(errorData.message || `Failed to save progress: ${response.statusText}`);
   }
   
   const responseData = await response.json();
-  console.log('[api.ts] Progress saved successfully:', responseData);
+  // console.log('[api.ts] Progress saved successfully:', responseData);
   return responseData;
 } catch (error) {
-  console.error('[api.ts] Error during saveVideoProgress fetch operation:', error);
+  // console.error('[api.ts] Error during saveVideoProgress fetch operation:', error);
   throw error; // Re-throw the error to be caught by the caller
 }
 }

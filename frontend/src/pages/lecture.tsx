@@ -203,7 +203,7 @@ export default function Lecture() {
   }, [ytPlayer, token, loadInitialProgress]);
 
   const onPlayerReady: YouTubeProps['onReady'] = (event) => {
-    console.log('[Lecture.tsx] YouTube Player ready.');
+    // console.log('[Lecture.tsx] YouTube Player ready.');
     setYtPlayer(event.target);
     // loadInitialProgress will be called by the useEffect dependent on ytPlayer and token
   };
@@ -214,7 +214,7 @@ export default function Lecture() {
     // Note: 'currentTime' is the polled state variable for current video time.
     // 'eventTime' here is the time when the event fired, fetched fresh.
     const eventTime = await ytPlayer.getCurrentTime();
-    console.log('[Lecture.tsx] Player state changed:', event.data, 'at time:', eventTime);
+    // console.log('[Lecture.tsx] Player state changed:', event.data, 'at time:', eventTime);
 
     switch (event.data) {
       case YouTube.PlayerState.PLAYING:
@@ -227,14 +227,14 @@ export default function Lecture() {
           if (lastPolledTimeRef.current > currentSegmentStartRef.current) { // Ensure the segment was valid
             const oldSegment = { start: currentSegmentStartRef.current, end: lastPolledTimeRef.current };
             setRawWatchedSegments(prev => [...prev, oldSegment]);
-            console.log('[Lecture.tsx] Segment ended by interruption/seek (PLAYING state), using lastPolledTimeRef, added to raw:', oldSegment);
+            // console.log('[Lecture.tsx] Segment ended by interruption/seek (PLAYING state), using lastPolledTimeRef, added to raw:', oldSegment);
           } else {
-            console.log('[Lecture.tsx] Interrupted segment (PLAYING state) was invalid (lastPolledTimeRef <= start), not adding. Start:', currentSegmentStartRef.current, 'End(lastPolledTimeRef):', lastPolledTimeRef.current);
+            // console.log('[Lecture.tsx] Interrupted segment (PLAYING state) was invalid (lastPolledTimeRef <= start), not adding. Start:', currentSegmentStartRef.current, 'End(lastPolledTimeRef):', lastPolledTimeRef.current);
           }
         }
         
         currentSegmentStartRef.current = playStartTime; // Start new segment from actual play start time
-        console.log('[Lecture.tsx] New segment started (PLAYING). StartRef:', currentSegmentStartRef.current);
+        // console.log('[Lecture.tsx] New segment started (PLAYING). StartRef:', currentSegmentStartRef.current);
         startPollingTime();
 
         if (videoDuration === 0 && typeof ytPlayer.getDuration === 'function') {
@@ -252,10 +252,10 @@ export default function Lecture() {
         if (currentSegmentStartRef.current !== null && lastPolledTimeRef.current > currentSegmentStartRef.current) {
             const newSegment = { start: currentSegmentStartRef.current, end: lastPolledTimeRef.current };
             setRawWatchedSegments(prev => [...prev, newSegment]);
-            console.log('[Lecture.tsx] New raw segment added (PAUSED), using lastPolledTimeRef:', newSegment);
+            // console.log('[Lecture.tsx] New raw segment added (PAUSED), using lastPolledTimeRef:', newSegment);
         } else if (currentSegmentStartRef.current !== null) {
             // Log if segment was active but invalid (e.g., lastPolledTimeRef.current <= start)
-            console.log('[Lecture.tsx] PAUSED: Active segment invalid based on lastPolledTimeRef. StartRef:', currentSegmentStartRef.current, 'lastPolledTimeRef:', lastPolledTimeRef.current);
+            // console.log('[Lecture.tsx] PAUSED: Active segment invalid based on lastPolledTimeRef. StartRef:', currentSegmentStartRef.current, 'lastPolledTimeRef:', lastPolledTimeRef.current);
         }
         currentSegmentStartRef.current = null; // Segment ended
         debouncedSaveProgress();
@@ -272,12 +272,12 @@ export default function Lecture() {
             if (segmentEnd > currentSegmentStartRef.current) { // Final check for validity
                 const finalSegment = { start: currentSegmentStartRef.current, end: segmentEnd };
                 setRawWatchedSegments(prev => [...prev, finalSegment]);
-                console.log('[Lecture.tsx] New raw segment added (ENDED), using lastPolledTimeRef:', finalSegment);
+                // console.log('[Lecture.tsx] New raw segment added (ENDED), using lastPolledTimeRef:', finalSegment);
             } else {
-                 console.log('[Lecture.tsx] ENDED: Segment invalid after capping with videoDuration. StartRef:', currentSegmentStartRef.current, 'lastPolledTimeRef:', lastPolledTimeRef.current, 'CappedEnd:', segmentEnd, 'VideoDuration:', videoDuration);
+                // console.log('[Lecture.tsx] ENDED: Segment invalid after capping with videoDuration. StartRef:', currentSegmentStartRef.current, 'lastPolledTimeRef:', lastPolledTimeRef.current, 'CappedEnd:', segmentEnd, 'VideoDuration:', videoDuration);
             }
         } else if (currentSegmentStartRef.current !== null) {
-            console.log('[Lecture.tsx] ENDED: Segment invalid or zero-length based on lastPolledTimeRef. StartRef:', currentSegmentStartRef.current, 'lastPolledTimeRef:', lastPolledTimeRef.current, 'VideoDuration:', videoDuration);
+            // console.log('[Lecture.tsx] ENDED: Segment invalid or zero-length based on lastPolledTimeRef. StartRef:', currentSegmentStartRef.current, 'lastPolledTimeRef:', lastPolledTimeRef.current, 'VideoDuration:', videoDuration);
         }
         currentSegmentStartRef.current = null; // Segment ended
         debouncedSaveProgress();
@@ -292,10 +292,10 @@ export default function Lecture() {
         if (currentSegmentStartRef.current !== null && preBufferCurrentTimeOnBuffer > currentSegmentStartRef.current) {
           const segmentBeforeBuffer = { start: currentSegmentStartRef.current, end: preBufferCurrentTimeOnBuffer };
           setRawWatchedSegments(prev => [...prev, segmentBeforeBuffer]);
-          console.log('[Lecture.tsx] Segment ended by BUFFERING, added to raw:', segmentBeforeBuffer);
+          // console.log('[Lecture.tsx] Segment ended by BUFFERING, added to raw:', segmentBeforeBuffer);
         }
         
-        console.log(`[Lecture.tsx] Player buffering. Closed active segment ending at ${preBufferCurrentTimeOnBuffer}. currentSegmentStartRef was ${currentSegmentStartRef.current}, now nulled. isPlaying set to false. Event time (new position): ${eventTime}`);
+        // console.log(`[Lecture.tsx] Player buffering. Closed active segment ending at ${preBufferCurrentTimeOnBuffer}. currentSegmentStartRef was ${currentSegmentStartRef.current}, now nulled. isPlaying set to false. Event time (new position): ${eventTime}`);
         currentSegmentStartRef.current = null; // Nullify to prevent active segment spanning the buffer/seek.
         break;
 
@@ -319,7 +319,7 @@ export default function Lecture() {
         // Note: Most browsers will not allow async operations here to complete reliably.
         // Synchronous XHR is deprecated and not recommended.
         // This is more of a best-effort, a proper solution might involve navigator.sendBeacon if applicable.
-        console.log('[Lecture.tsx] Attempting to save progress on page unload (best effort).');
+        // console.log('[Lecture.tsx] Attempting to save progress on page unload (best effort).');
         // Consider if immediate save is critical or if debounced save is sufficient.
         // handleSaveProgress(); // This might not complete
       }
@@ -339,7 +339,7 @@ export default function Lecture() {
   };
 
   const handlePlayPause = () => {
-    console.log('[Lecture.tsx] handlePlayPause clicked. Current isPlaying state:', isPlaying, 'Player:', ytPlayer);
+    // console.log('[Lecture.tsx] handlePlayPause clicked. Current isPlaying state:', isPlaying, 'Player:', ytPlayer);
     if (!ytPlayer) return;
     if (isPlaying) {
       ytPlayer.pauseVideo();
@@ -379,7 +379,7 @@ export default function Lecture() {
   // Prepare intervals for ProgressBar using live data
   const liveProgressBarIntervals = liveMergedIntervals.map(iv => [iv.start, iv.end] as [number, number]);
 
-  console.log('[Lecture.tsx] Rendering component. isPlaying:', isPlaying, 'currentTime:', currentTime, 'videoDuration:', videoDuration);
+  // console.log('[Lecture.tsx] Rendering component. isPlaying:', isPlaying, 'currentTime:', currentTime, 'videoDuration:', videoDuration);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -409,20 +409,41 @@ export default function Lecture() {
           <p className="text-gray-600">Track your progress as you learn Node.js concepts</p>
         </div>
 
-        <Card className="overflow-hidden mb-6">
-          <div className="aspect-video bg-black flex justify-center items-center">
-            {YOUTUBE_VIDEO_ID ? (
-              <YouTube
-                videoId={YOUTUBE_VIDEO_ID}
-                opts={playerOptions}
-                onReady={onPlayerReady}
-                onStateChange={onPlayerStateChange}
-                onError={(e: any) => console.error('[Lecture.tsx] YouTube Player Error:', e)}
-                className='w-full h-full'
-              />
-            ) : (
-              <p>Invalid YouTube Video URL</p>
-            )}
+        <Card className="overflow-hidden mb-6 w-full">
+          <div className="relative pt-[56.25%] bg-black"> {/* 16:9 Aspect Ratio */}
+            <div className="absolute inset-0 w-full h-full">
+              {YOUTUBE_VIDEO_ID ? (
+                <YouTube
+                  videoId={YOUTUBE_VIDEO_ID}
+                  opts={{
+                    ...playerOptions,
+                    width: '100%',
+                    height: '100%',
+                    playerVars: {
+                      ...playerOptions?.playerVars,
+                      controls: 1,
+                      rel: 0,
+                      modestbranding: 1,
+                    },
+                  }}
+                  onReady={onPlayerReady}
+                  onStateChange={onPlayerStateChange}
+                  onError={(e: any) => console.error('[Lecture.tsx] YouTube Player Error:', e)}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                  }}
+                  iframeClassName="w-full h-full absolute top-0 left-0"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white">
+                  <p>Invalid YouTube Video URL</p>
+                </div>
+              )}
+            </div>
           </div>
           
           <CardContent className="p-6">
