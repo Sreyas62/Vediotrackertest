@@ -16,7 +16,12 @@ import { connectDB } from "./db";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors()); // Enable CORS for all routes
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://your-frontend-deployed-url.com'], // Replace with your actual deployed frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+})); // Enable CORS for specific origins and options
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
