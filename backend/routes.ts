@@ -5,7 +5,6 @@ import { insertUserSchema, loginSchema, insertProgressSchema } from "@db/schema"
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 // Define a custom request type that includes userId
 interface AuthenticatedRequest extends Request {
@@ -21,8 +20,14 @@ const authenticateToken = async (req: AuthenticatedRequest, res: Response, next:
     return res.status(401).json({ message: 'Access token required' });
   }
 
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error("JWT_SECRET is not defined. Please set it in the environment variables.");
+    return res.status(500).json({ message: 'Internal server error: JWT secret not configured.' });
+  }
+
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const decoded = jwt.verify(token, secret) as any;
     req.userId = decoded.userId;
     next();
   } catch (error) {
@@ -54,7 +59,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Generate JWT token
-      const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '24h' });
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        console.error("JWT_SECRET is not defined for token signing in /register. Please set it in the environment variables.");
+        return res.status(500).json({ message: 'Internal server error: JWT secret not configured for signing.' });
+      }
+      const token = jwt.sign({ userId: user._id }, secret, { expiresIn: '24h' });
       
       res.status(201).json({
         message: "User created successfully",
@@ -84,7 +94,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Generate JWT token
-      const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '24h' });
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        console.error("JWT_SECRET is not defined for token signing in /login. Please set it in the environment variables.");
+        return res.status(500).json({ message: 'Internal server error: JWT secret not configured for signing.' });
+      }
+      const token = jwt.sign({ userId: user._id }, secret, { expiresIn: '24h' });
       
       res.json({
         message: "Login successful",
