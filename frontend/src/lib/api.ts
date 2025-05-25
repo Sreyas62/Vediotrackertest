@@ -13,7 +13,7 @@ export interface VideoProgressData {
   updatedAt?: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 /**
  * Fetches the video progress for a given videoId.
