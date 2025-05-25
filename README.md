@@ -2,6 +2,14 @@
 
 A sophisticated system for tracking and visualizing viewing progress in educational videos. It accurately records watched segments, handles native player seeks, and ensures data persistence for a seamless user experience.
 
+## Live Demo
+
+You can access the live application here:
+
+-   **Frontend (Vercel):** [https://vediotrackertest.vercel.app](https://vediotrackertest.vercel.app)
+-   **Backend API Base (Render):** [https://vediotrackertest.onrender.com](https://vediotrackertest.onrender.com)
+    *(Note: This is the base URL. API endpoints are typically prefixed with `/api`)*
+
 ## Features
 
 - **Accurate Segment Tracking**: Precisely records watched video intervals.
